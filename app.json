@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "carsharing-app",
-    "slug": "carsharing-app",
+    "name": "Carsharing",
+    "slug": "Carsharing",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
