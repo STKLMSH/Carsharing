@@ -4,7 +4,7 @@ export type Car = {
   id: string;
   brand: string;
   year: string;
-  pricePerDay: string;
+  pricePerDay: number;
   mileage: string;
   image: ImageSourcePropType;
   row: number;
@@ -19,7 +19,7 @@ export const cars: Car[] = [
     id: "1",
     brand: "Mercedes-Maybach",
     year: "2024",
-    pricePerDay: "1500 BYN",
+    pricePerDay: 1500,
     mileage: "250 км",
     image: require("../assets/images/car1.png"),
     row: 1,
@@ -30,7 +30,7 @@ export const cars: Car[] = [
     id: "2",
     brand: "BMW M5 Competition",
     year: "2023",
-    pricePerDay: "950 BYN",
+    pricePerDay: 950,
     mileage: "250 км",
     image: require("../assets/images/car2.png"),
     row: 2,
@@ -41,7 +41,7 @@ export const cars: Car[] = [
     id: "3",
     brand: "Porsche Taycan",
     year: "2024",
-    pricePerDay: "1200 BYN",
+    pricePerDay: 1200,
     mileage: "300 км",
     image: require("../assets/images/car3.png"),
     row: 3,
@@ -52,7 +52,7 @@ export const cars: Car[] = [
     id: "4",
     brand: "Audi RS e-tron GT",
     year: "2024",
-    pricePerDay: "1100 BYN",
+    pricePerDay: 1100,
     mileage: "300 км",
     image: require("../assets/images/car4.png"),
     row: 4,
