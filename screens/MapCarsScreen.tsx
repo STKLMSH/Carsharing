@@ -36,7 +36,7 @@ export function MapCarsScreen({ navigation }: Props) {
   return (
     <View style={styles.container}>
       {/* Карта */}
-      <Image source={mapImage} style={StyleSheet.absoluteFill} resizeMode="cover" />
+      <Image source={mapImage} style={styles.map} resizeMode="cover" />
 
       <SafeAreaView style={styles.safe}>
         <View style={styles.header}>
@@ -60,11 +60,11 @@ export function MapCarsScreen({ navigation }: Props) {
                     ]}
                   >
                     {({ pressed }) => (
-                      <Ionicons
-                        name="location-sharp"
-                        size={56}
-                        color={pressed ? colors.pressed : colors.default}
-                      />
+                        <Ionicons
+                          name="location-sharp"
+                          size={56}
+                          color={pressed ? colors.pressed : colors.default}
+                        />
                     )}
                   </Pressable>
                 ))}
@@ -130,6 +130,7 @@ export function MapCarsScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
+  map: { position: "absolute", top: 0, left: 0,  width: "100%", height: "100%" },
   container: { flex: 1, backgroundColor: colors.background },
   safe: { flex: 1 },
   header: { paddingHorizontal: 16, paddingTop: 8, alignItems: "flex-start" },
@@ -153,7 +154,7 @@ const styles = StyleSheet.create({
       paddingHorizontal: 16,
       height: 36,
       borderRadius: 18,
-      backgroundColor: colors.disable,
+      backgroundColor: colors.disable2,
   },
     tabActive: {
       flexDirection: "row",
