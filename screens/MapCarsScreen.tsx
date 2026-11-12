@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
       alignItems: "center",
   },
     badgeText: { fontSize: 12, fontWeight: "700", color: colors.textSecondary },
-    listContent: { paddingHorizontal: 16 },
-    empty: { width: 280, height: 120, justifyContent: "center" },
+    listContent: { flexGrow: 1, paddingHorizontal: 16 },
+    empty: { flex: 1, height: 120, justifyContent: "center", alignItems: "center" },
     emptyText: { fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   });
