@@ -14,7 +14,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "Booking">;
 
 const MIN_DAYS = 1;
 const MAX_DAYS = 30;
-const MONTHS = ["янв", "фев", "март", "апр", "май", "июн", "июл", "авг", "сен", "окт", "нояб", "дек"];
+const MONTHS = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "нояб", "дек"];
 const PICKUP_DAY = 12;
 const PICKUP_MONTH = 8;
 
