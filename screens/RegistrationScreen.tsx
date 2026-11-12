@@ -1,10 +1,11 @@
-import React, {useState} from "react";
+import React from "react";
 import { View, Text, TextInput, StyleSheet, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../types";
 import { Button } from "../components/Button";
 import { FormField } from "../components/FormField";
+import { useForm } from "../hooks/useForm";
 import { colors } from "../theme";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Registration">;
@@ -35,16 +36,15 @@ export function RegistrationScreen({ navigation }: Props) {
     const { width } = useWindowDimensions();
     const front = width * 1.25; 
     const back = width * 0.75; 
-    const [name, setName] = useState("");
-    const [phone, setPhone] = useState("");
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const { values, errors, handleChange, handleSubmit } = useForm<RegistrationValues>(
+      { name: "", phone: "" },
+      validate
+    );
 
     function onSubmit() {
-      const nextErrors = validate({ name, phone });
-      setErrors(nextErrors);
-      if (Object.keys(nextErrors).length === 0) {
+      handleSubmit(() => {
         navigation.navigate("MapCars");
-      }
+      });
     }
 
   return (
@@ -89,8 +89,8 @@ export function RegistrationScreen({ navigation }: Props) {
         <FormField error={errors.name}>
           <TextInput
             style={[styles.input, errors.name ? styles.inputError : null]}
-            value={name}
-            onChangeText={setName}
+            value={values.name}
+            onChangeText={(text) => handleChange("name", text)}
             placeholder="Имя"
             placeholderTextColor={colors.placeholderText}
           />
@@ -99,8 +99,8 @@ export function RegistrationScreen({ navigation }: Props) {
         <FormField error={errors.phone}>
           <TextInput
             style={[styles.input, errors.phone ? styles.inputError : null]}
-            value={phone}
-            onChangeText={setPhone}
+            value={values.phone}
+            onChangeText={(text) => handleChange("phone", text)}
             placeholder="Телефон"
             placeholderTextColor={colors.placeholderText}
             keyboardType="phone-pad"
