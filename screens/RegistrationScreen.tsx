@@ -9,13 +9,13 @@ import { colors } from "../theme";
 type Props = NativeStackScreenProps<RootStackParamList, "Registration">;
 
 // Экран «01 Регистрация»
-{/* Детали фона */}
 export function RegistrationScreen({ navigation }: Props) {
     const { width } = useWindowDimensions();
     const front = width * 1.25; 
     const back = width * 0.75; 
   return (
     <View style={styles.container}>
+      {/* Детали фона */}
       <View style={styles.topArc} />
         <View
           style={[
@@ -50,6 +50,7 @@ export function RegistrationScreen({ navigation }: Props) {
         <Text style={styles.subtitle}>забронируйте авто{"\n"}уже сегодня</Text>
       </SafeAreaView>
 
+      {/* Форма */}
       <View style={styles.form}>
         <Text style={styles.label}>Номер телефона</Text>
         <TextInput
