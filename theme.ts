@@ -12,4 +12,5 @@ export const colors = {
   field: "#EDFFF9", 
   border: "#E2E5E8",
   shadow: "rgba(149, 149, 149, 0.5)",
+  error: "#e33939",
 };
