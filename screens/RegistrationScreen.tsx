@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet, useWindowDimensions } from "react-na
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../types";
-import { PrimaryButton } from "../components/PrimaryButton";
+import { Button } from "../components/Button";
 import { colors } from "../theme";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Registration">;
@@ -60,10 +60,7 @@ export function RegistrationScreen({ navigation }: Props) {
           keyboardType="phone-pad"
         />
         <View style={styles.buttonWrap}>
-          <PrimaryButton
-            title="Зарегистрироваться"
-            onPress={() => navigation.navigate("MapCars")}
-          />
+          <Button onPress={() => navigation.navigate("MapCars")}>Зарегистрироваться</Button>
         </View>
       </View>
     </View>

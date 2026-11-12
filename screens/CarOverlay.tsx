@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../types";
 import { CarCard } from "../components/CarCard";
-import { PrimaryButton } from "../components/PrimaryButton";
+import { Button } from "../components/Button";
 import { getCar } from "../data/cars";
 import { colors } from "../theme";
 
@@ -59,10 +59,9 @@ export function CarOverlayScreen({ route, navigation }: Props) {
         <SafeAreaView edges={["bottom"]} style={styles.sheet}>
           <CarCard brand={car.brand} year={car.year} image={car.image} imageHeight={120} />
           <View style={styles.buttonWrap}>
-            <PrimaryButton
-              title="Забронировать"
-              onPress={() => navigation.replace("Booking", { carId: car.id })}
-            />
+            <Button onPress={() => navigation.replace("Booking", { carId: car.id })}>
+              Забронировать
+            </Button>
           </View>
         </SafeAreaView>
       </Animated.View>

@@ -6,7 +6,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../types";
 import { BackButton } from "../components/BackButton";
 import { CarCard } from "../components/CarCard";
-import { PrimaryButton } from "../components/PrimaryButton";
+import { Button } from "../components/Button";
 import { getCar } from "../data/cars";
 import { colors } from "../theme";
 
@@ -108,7 +108,7 @@ export function BookingScreen({ route, navigation }: Props) {
         </View>
 
         <View style={styles.buttonWrap}>
-          <PrimaryButton title="Забронировать" />
+          <Button>Забронировать</Button>
         </View>
 
         <View style={styles.tariff}>
