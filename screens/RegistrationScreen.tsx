@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import { View, Text, TextInput, StyleSheet, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../types";
@@ -10,15 +10,47 @@ type Props = NativeStackScreenProps<RootStackParamList, "Registration">;
 
 // Экран «01 Регистрация»
 export function RegistrationScreen({ navigation }: Props) {
+    const { width } = useWindowDimensions();
+    const front = width * 1.25; 
+    const back = width * 0.75; 
   return (
     <View style={styles.container}>
+      {/* Детали фона */}
       <View style={styles.topArc} />
+        <View
+          style={[
+            styles.circle,
+            styles.circleBack,
+            {
+              width: back,
+              height: back,
+              borderRadius: back / 2,
+              right: -back * 0.3,
+              bottom: -back * 0.4,
+            },
+          ]}
+        />
+        <View
+          style={[
+            styles.circle,
+            styles.circleFront,
+            {
+              width: front,
+              height: front,
+              borderRadius: front / 2,
+              left: -front * 0.3,
+              bottom: -front * 0.55,
+            },
+          ]}
+        />
 
+      {/* Заголовок */}
       <SafeAreaView edges={["top"]} style={styles.titleBlock}>
         <Text style={styles.title}>Добро{"\n"}пожаловать</Text>
         <Text style={styles.subtitle}>забронируйте авто{"\n"}уже сегодня</Text>
       </SafeAreaView>
 
+      {/* Форма */}
       <View style={styles.form}>
         <Text style={styles.label}>Номер телефона</Text>
         <TextInput
@@ -34,7 +66,6 @@ export function RegistrationScreen({ navigation }: Props) {
           />
         </View>
       </View>
-      <View style={styles.bottomArc} />
     </View>
   );
 }
@@ -101,13 +132,7 @@ const styles = StyleSheet.create({
   buttonWrap: {
     marginTop: 12,
   },
-  bottomArc: {
-    position: "absolute",
-    bottom: -230, 
-    alignSelf: "center",
-    backgroundColor: colors.details2,
-    width: 380, 
-    height: 380, 
-    borderRadius: 190, 
-  },
+  circle: { position: "absolute" },
+  circleBack: { backgroundColor: colors.details },
+  circleFront: { backgroundColor: colors.details2 },
 });
