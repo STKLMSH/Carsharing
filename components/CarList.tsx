@@ -13,7 +13,7 @@ type CarListProps = {
     onPress: () => void;
 };
 
-export function CarListProps({
+export function CarList({
     brand,
     year,
     pricePerDay,

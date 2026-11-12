@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../types";
 import { BackButton } from "../components/BackButton";
-import { CarListProps } from "../components/CarList";
+import { CarList } from "../components/CarList";
 import { cars, mapImage } from "../data/cars";
 import { colors } from "../theme";
 
@@ -105,7 +105,7 @@ export function MapCarsScreen({ navigation }: Props) {
                   showsHorizontalScrollIndicator = {false}
                   contentContainerStyle={styles.listContent}
                   renderItem={({ item }) => (
-                    <CarListProps
+                    <CarList
                       brand = {item.brand}
                       year={item.year}
                       pricePerDay={item.pricePerDay}
