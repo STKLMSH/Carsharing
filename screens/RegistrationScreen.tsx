@@ -159,6 +159,7 @@ const styles = StyleSheet.create({
   form: {
     paddingHorizontal: 24,
     paddingTop: 24, 
+    gap: 12,
   },
   label: {
     fontSize: 13,
@@ -183,7 +184,6 @@ const styles = StyleSheet.create({
     borderColor: colors.error,
   },
   buttons: {
-    marginTop: 16,
     gap: 4,
   },
   buttonWrap: {

@@ -12,9 +12,8 @@ type FormFieldProps = {
 export function FormField({ label, error, children }: FormFieldProps) {
     return (
         <View style={styles.field}>
-            <Text style={styles.label}>{label}</Text>
-            {children}
             {label ? <Text style={styles.label}>{label}</Text> : null}
+            {children}
             {error ? <Text style={styles.error}>{error}</Text> : null}
         </View>
     );

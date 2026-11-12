@@ -11,7 +11,7 @@ type ButtonProps = {
     disabled?: boolean;
     };
 
-export function Button({ children, variant = "link", onPress, disabled = false }: ButtonProps) 
+export function Button({ children, variant = "primary", onPress, disabled = false }: ButtonProps) 
 {
     const isPrimary = variant === "primary";
 
