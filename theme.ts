@@ -3,6 +3,7 @@ export const colors = {
   hover: "#FFD7A2", // Hover
   pressed: "#FF6F01", // Pressed
   disable: "#E6E2DD", // Disable
+  disable2: "#F1F2F3", // Disable-2
   details: "#BEFFEA", // Details 
   details2: "#4FE1B3", // Details-2 
   textMain: "#1A1D20", // Text-Main
