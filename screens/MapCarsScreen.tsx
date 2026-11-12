@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../types";
 import { BackButton } from "../components/BackButton";
-import { CarList } from "../components/CarList";
+import { CarListProps } from "../components/CarList";
 import { cars, mapImage } from "../data/cars";
 import { colors } from "../theme";
 
@@ -105,7 +105,7 @@ export function MapCarsScreen({ navigation }: Props) {
                   showsHorizontalScrollIndicator = {false}
                   contentContainerStyle={styles.listContent}
                   renderItem={({ item }) => (
-                    <CarList
+                    <CarListProps
                       brand = {item.brand}
                       year={item.year}
                       pricePerDay={item.pricePerDay}
@@ -177,6 +177,6 @@ const styles = StyleSheet.create({
   },
     badgeText: { fontSize: 12, fontWeight: "700", color: colors.textSecondary },
     listContent: { paddingHorizontal: 16 },
-    empty: { width: 280, height: 140, justifyContent: "center" },
+    empty: { width: 280, height: 120, justifyContent: "center" },
     emptyText: { fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   });

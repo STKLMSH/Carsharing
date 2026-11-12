@@ -3,7 +3,7 @@ import { View, Text, Image, Pressable, StyleSheet, ImageSourcePropType } from "r
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../theme";
 
-type CarList = {
+type CarListProps = {
     brand: string;
     year: string;
     pricePerDay: number;
@@ -13,7 +13,7 @@ type CarList = {
     onPress: () => void;
 };
 
-export function CarList({
+export function CarListProps({
     brand,
     year,
     pricePerDay,
@@ -21,7 +21,7 @@ export function CarList({
     isFav,
     onToggleFav,
     onPress,
-}: CarList) {
+}: CarListProps) {
     return (
         <Pressable
         onPress={onPress}
@@ -52,6 +52,7 @@ export function CarList({
 const styles = StyleSheet.create({
     card: {
         width: 224,
+        height: 120,
         padding: 8,
         marginRight: 8,
         borderRadius: 16,
