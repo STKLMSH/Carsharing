@@ -7,6 +7,7 @@ import type { RootStackParamList } from "../types";
 import { BackButton } from "../components/BackButton";
 import { CarCard } from "../components/CarCard";
 import { Button } from "../components/Button";
+import { useAuth } from "../contexts/AuthContext";
 import { getCar } from "../data/cars";
 import { colors } from "../theme";
 
@@ -49,6 +50,7 @@ export function BookingScreen({ route, navigation }: Props) {
   const car = getCar(route.params.carId);
 
   const [days, setDays] = useState(MIN_DAYS);
+  const { user } = useAuth();
 
   function decrease() {
     setDays((prev) => Math.max(MIN_DAYS, prev - 1));
@@ -107,8 +109,19 @@ export function BookingScreen({ route, navigation }: Props) {
           )}
         </View>
 
+        <View style={styles.periodBlock}>
+          <Text style={styles.sectionLabel}>Водитель</Text>
+          {user ? (
+            <Text style={styles.driverText}>
+              {user.name} · {user.phone}
+            </Text>
+          ) : (
+            <Text style={styles.hint}>Зарегистрируйтесь, чтобы забронировать автомобиль</Text>
+          )}
+        </View>
+
         <View style={styles.buttonWrap}>
-          <Button>Забронировать</Button>
+          <Button disabled={!user}>Забронировать</Button>
         </View>
 
         <View style={styles.tariff}>
@@ -173,6 +186,7 @@ const styles = StyleSheet.create({
     color: colors.textMain,
   },
   hint: { fontSize: 12, color: colors.textSecondary },
+  driverText: { fontSize: 14, fontWeight: "600", color: colors.textMain },
   totalRow: { marginTop: 4, paddingTop: 8, borderTopWidth: 1, borderTopColor: colors.border },
   totalLabel: { fontSize: 14, fontWeight: "700", color: colors.textMain},
   totalValue: { fontSize: 14, fontWeight: "700", color: colors.pressed},

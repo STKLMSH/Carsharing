@@ -6,6 +6,7 @@ import type { RootStackParamList } from "../types";
 import { Button } from "../components/Button";
 import { FormField } from "../components/FormField";
 import { useForm } from "../hooks/useForm";
+import { useAuth } from "../contexts/AuthContext";
 import { colors } from "../theme";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Registration">;
@@ -31,18 +32,25 @@ function validate(values: RegistrationValues) {
   return errors;
 }
 
+function formatPhone(phone: string) {
+  const d = phone.replace(/\D/g, "");
+  return `+${d.slice(0, 3)} ${d.slice(3, 5)} ${d.slice(5, 8)}-${d.slice(8, 10)}-${d.slice(10, 12)}`;
+}
+
 // Экран «01 Регистрация»
 export function RegistrationScreen({ navigation }: Props) {
     const { width } = useWindowDimensions();
     const front = width * 1.25; 
     const back = width * 0.75; 
+    const { login } = useAuth();
     const { values, errors, handleChange, handleSubmit } = useForm<RegistrationValues>(
       { name: "", phone: "" },
       validate
     );
 
     function onSubmit() {
-      handleSubmit(() => {
+      handleSubmit((validValues) => {
+        login({ name: validValues.name.trim(), phone: formatPhone(validValues.phone) })
         navigation.navigate("MapCars");
       });
     }

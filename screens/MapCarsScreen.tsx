@@ -6,6 +6,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../types";
 import { BackButton } from "../components/BackButton";
 import { CarList } from "../components/CarList";
+import { useAuth } from "../contexts/AuthContext";
 import { cars, mapImage } from "../data/cars";
 import { colors } from "../theme";
 
@@ -19,6 +20,12 @@ const ROWS = [1, 2, 3, 4];
 export function MapCarsScreen({ navigation }: Props) {
   const [favIds, setFavIds] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>("all");
+  const { user, logout } = useAuth();
+
+  function handleLogout() {
+    logout();
+    navigation.popTo("Registration");
+  }
 
   function toggleFav(id: string) {
     setFavIds((prev) =>
@@ -41,6 +48,17 @@ export function MapCarsScreen({ navigation }: Props) {
       <SafeAreaView style={styles.safe}>
         <View style={styles.header}>
           <BackButton onPress={() => navigation.goBack()} />
+
+            <View style={styles.userChip}>
+              <Ionicons name="person-circle-outline" size={20} color={colors.textMain} />
+              <Text style={styles.userName}>{user ? user.name : "Гость"}</Text>
+              <Pressable
+                onPress={user ? handleLogout : () => navigation.popTo("Registration")}
+                hitSlop={8}
+                >
+                  <Text style={styles.userAction}>{user ? "Выйти" : "Войти"}</Text>
+                </Pressable>
+            </View>
         </View>
 
         {/* Маркеры */}
@@ -133,7 +151,37 @@ const styles = StyleSheet.create({
   map: { position: "absolute", top: 0, left: 0,  width: "100%", height: "100%" },
   container: { flex: 1, backgroundColor: colors.background },
   safe: { flex: 1 },
-  header: { paddingHorizontal: 16, paddingTop: 8, alignItems: "flex-start" },
+  header: { 
+    paddingHorizontal: 16, 
+    paddingTop: 8, 
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  userChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    height: 40,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    backgroundColor: colors.background,
+    shadowColor: colors.shadow2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  userName: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: colors.textMain,
+  },
+  userAction: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: colors.default,
+  },
   markersLayer: { flex: 1, paddingBottom: 40 },
   markerRow: { flex: 1, justifyContent: "center" },
   marker: { width: 56, height: 56 },
