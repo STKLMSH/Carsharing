@@ -31,9 +31,8 @@ carsharing-app/
 ```
 ## Установка
 
-    git clone https://github.com/STKLMSH/Carsharing-2.git
-    cd Carsharing-2
-    git checkout Lab4
+    git clone https://github.com/STKLMSH/Carsharing.git
+    cd Carsharing
     npm install
 
 ## Запуск
