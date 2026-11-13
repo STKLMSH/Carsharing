@@ -10,24 +10,31 @@
 # Структура проекта
 
 ```
-carsharing-app/
-├── App.tsx                      – корневой компонент, навигатор
+Carsharing/
+├── App.tsx                      – корневой компонент
 ├── types.ts                     – типы параметров маршрутов
 ├── theme.ts                     – цвета из таблицы стилей
 ├── data/
 │   └── cars.ts                  – массив автомобилей
 ├── components/
-│   ├── CarCard.tsx              – карточка автомобиля
-│   ├── PrimaryButton.tsx        – целевая кнопка
+│   ├── Button.tsx               – кнопка с вариантами primary / link
+│   ├── FormField.tsx            – обёртка поля формы с текстом ошибки
+│   ├── CarCard.tsx              – крупная карточка автомобиля
+│   ├── CarList.tsx              – карточка автомобиля в списке на карте
 │   └── BackButton.tsx           – кнопка «Назад»
+├── hooks/
+│   └── useForm.ts               – хук: значения полей, ошибки, отправка формы
+├── contexts/
+│   └── AuthContext.tsx          – вошедший пользователь login / logout
 ├── screens/
-│   ├── RegistrationScreen.tsx   – 01 Регистрация
+│   ├── RegistrationScreen.tsx   – 01 Регистрация 
 │   ├── MapCarsScreen.tsx        – 02 Карта с автомобилями
 │   ├── CarOverlay.tsx           – всплывающая панель
-│   └── BookingScreen.tsx        – 03 Карточка и бронирование
+│   └── BookingScreen.tsx        – 03 Карточка автомобиля и бронирование
 └── assets/images/
     ├── map.png                  – карта
     └── car1.png … car4.png      – изображения автомобилей
+
 ```
 ## Установка
 
