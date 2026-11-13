@@ -3,16 +3,58 @@ import { View, Text, TextInput, StyleSheet, useWindowDimensions } from "react-na
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../types";
-import { PrimaryButton } from "../components/PrimaryButton";
+import { Button } from "../components/Button";
+import { FormField } from "../components/FormField";
+import { useForm } from "../hooks/useForm";
+import { useAuth } from "../contexts/AuthContext";
 import { colors } from "../theme";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Registration">;
+
+type RegistrationValues = { name: string; phone: string };
+
+function validate(values: RegistrationValues) {
+  const errors: Record<string, string> = {};
+
+  if (!values.name.trim()) {
+    errors.name = "Введите имя";
+  } else if (values.name.trim().length < 2) {
+    errors.name = "Имя должно быть не короче 2 букв";
+  }
+
+  const digits = values.phone.replace(/\D/g, "");
+  if (!digits) {
+    errors.phone = "Введите номер телефона";
+  } else if (digits.length !== 12 || !digits.startsWith("375")) {
+    errors.phone = "Номер телефона набран некорректно";
+  }
+
+  return errors;
+}
+
+function formatPhone(phone: string) {
+  const d = phone.replace(/\D/g, "");
+  return `+${d.slice(0, 3)} ${d.slice(3, 5)} ${d.slice(5, 8)}-${d.slice(8, 10)}-${d.slice(10, 12)}`;
+}
 
 // Экран «01 Регистрация»
 export function RegistrationScreen({ navigation }: Props) {
     const { width } = useWindowDimensions();
     const front = width * 1.25; 
     const back = width * 0.75; 
+    const { login } = useAuth();
+    const { values, errors, handleChange, handleSubmit } = useForm<RegistrationValues>(
+      { name: "", phone: "" },
+      validate
+    );
+
+    function onSubmit() {
+      handleSubmit((validValues) => {
+        login({ name: validValues.name.trim(), phone: formatPhone(validValues.phone) })
+        navigation.navigate("MapCars");
+      });
+    }
+
   return (
     <View style={styles.container}>
       {/* Детали фона */}
@@ -52,18 +94,34 @@ export function RegistrationScreen({ navigation }: Props) {
 
       {/* Форма */}
       <View style={styles.form}>
-        <Text style={styles.label}>Номер телефона</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="+375 (29) 00-000-00"
-          placeholderTextColor="#9AA3AB"
-          keyboardType="phone-pad"
-        />
-        <View style={styles.buttonWrap}>
-          <PrimaryButton
-            title="Зарегистрироваться"
-            onPress={() => navigation.navigate("MapCars")}
+        <FormField error={errors.name}>
+          <TextInput
+            style={[styles.input, errors.name ? styles.inputError : null]}
+            value={values.name}
+            onChangeText={(text) => handleChange("name", text)}
+            placeholder="Имя"
+            placeholderTextColor={colors.placeholderText}
           />
+        </FormField>
+
+        <FormField error={errors.phone}>
+          <TextInput
+            style={[styles.input, errors.phone ? styles.inputError : null]}
+            value={values.phone}
+            onChangeText={(text) => handleChange("phone", text)}
+            placeholder="Телефон"
+            placeholderTextColor={colors.placeholderText}
+            keyboardType="phone-pad"
+          />
+        </FormField>
+
+        <View style={styles.buttons}>
+          <Button variant="primary" onPress={onSubmit}>
+            Зарегистрироваться
+          </Button>
+          <Button variant="link" onPress={() => navigation.navigate("MapCars")}>
+            Продолжить без регистрации
+          </Button>
         </View>
       </View>
     </View>
@@ -108,8 +166,8 @@ const styles = StyleSheet.create({
   },
   form: {
     paddingHorizontal: 24,
-    paddingTop: 54, 
-    gap: 8,
+    paddingTop: 24, 
+    gap: 12,
   },
   label: {
     fontSize: 13,
@@ -123,11 +181,18 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     fontSize: 16,
     color: colors.textMain,
-    shadowColor: "#959595",
+    shadowColor: colors.shadow2,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
+  },
+  inputError: {
+    borderWidth: 1,
+    borderColor: colors.error,
+  },
+  buttons: {
+    gap: 4,
   },
   buttonWrap: {
     marginTop: 12,
