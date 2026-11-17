@@ -8,12 +8,12 @@ const PORT = 3000;
 const bookings = [];
 let nextBookingId = 1;
 
-function isBusy(cardId) {
-    return bookings.some((booking) => booking.cardId === cardId);
+function isBusy(carId) {
+    return bookings.some((booking) => booking.carId === carId);
 }
 
 function withStatus(car) {
-    return { ...car, busy: isBusy(card.id) };
+    return { ...car, busy: isBusy(car.id) };
 }
 
 function onlyDigits(value) {
@@ -56,25 +56,25 @@ app.get("/api/cars/:id", (req, res) => {
 
 
 //                  маршруты бронирования
-app.get("/api/booking", (req, res) => {
+app.get("/api/bookings", (req, res) => {
     const phone = onlyDigits(req.query.phone);
     const result = phone
-        ? bookings.filter((booking) => onlyDigits(booking, phone) === phone)
+        ? bookings.filter((booking) => onlyDigits(booking.phone) === phone)
         : bookings;
         res.json(result);
 });
 
-app.post("/api/booking", (req, res) => {
+app.post("/api/bookings", (req, res) => {
     const error = validateBooking(req.body);
     if (error) {
         return res.status(400).json({ error });
     }
 
-    const { cardId, days, name, phone } = req.body;
+    const { carId, days, name, phone } = req.body;
     const car = cars.find((item) => item.id === carId);
 
-    if (isBusy(cardId)) {
-        return res.status(409).json({ error: `$(car.brand) уже забронирован`}); 
+    if (isBusy(carId)) {
+        return res.status(409).json({ error: `${car.brand} уже забронирован`}); 
     }
 
     const booking = {
@@ -87,7 +87,7 @@ app.post("/api/booking", (req, res) => {
         phone,
         createdAt: new Date().toISOString(),
     };
-    booking.push(booking);
+    bookings.push(booking);
     res.status(201).json(booking);
 });
 
@@ -118,17 +118,17 @@ function validateBooking(body) {
     if (!Number.isInteger(body.carId)) {
         return "Поле cardId обязательно и должно быть целым числом";
     }
-    if (!cars.some((car) => car.id === body.cardId)) {
-        return "Автомобиля с id ${body.cardId} не существует";
+    if (!cars.some((car) => car.id === body.carId)) {
+        return `Автомобиля с id ${body.carId} не существует`;
     }
     if (!Number.isInteger(body.days) || body.days < 1 || body.days > 30) {
         return "Срок аренды должен быть целым числом от 1 до 30 суток";
     }
-    if (typeof body.name !== "string" || body.name.trim().lenght < 2) {
+    if (typeof body.name !== "string" || body.name.trim().length < 2) {
         return "Имя водителя не должно быть короче 2 символов";
     }
     const digits = onlyDigits(body.phone);
-    if (digits.lenght !== 12 || !digits.startsWidth("375")) {
+    if (digits.length !== 12 || !digits.startsWith("375")) {
         return "Телефон должен быть в формате +375 XX XXX-XX-XX";
     }
     return null;
