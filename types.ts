@@ -1,6 +1,7 @@
 export type RootStackParamList = {
-  Registration: undefined;
-  MapCars: undefined;
-  CarOverlay: { carId: string };
-  Booking: { carId: string };
+    Registration: undefined;
+    MapCars: undefined;
+    CarOverlay: { carId: number }; 
+    Booking: { carId: number };
+    Bookings: undefined; 
 };
