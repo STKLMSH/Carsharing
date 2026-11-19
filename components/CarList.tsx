@@ -5,7 +5,7 @@ import { colors } from "../theme";
 
 type CarListProps = {
     brand: string;
-    year: string;
+    year: number;
     pricePerDay: number;
     image: ImageSourcePropType;
     isFav: boolean;

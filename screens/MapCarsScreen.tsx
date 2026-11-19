@@ -84,7 +84,7 @@ export function MapCarsScreen({ navigation }: Props) {
         renderItem={({ item }) => (
           <CarList
             brand={item.brand}
-            year={String(item.year)}
+            year={item.year}
             pricePerDay={item.pricePerDay}
             image={{ uri: imageUrl(item.image) }}
             isFav={favIds.includes(item.id)}
