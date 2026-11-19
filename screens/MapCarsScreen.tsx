@@ -95,7 +95,7 @@ export function MapCarsScreen({ navigation }: Props) {
         ListEmptyComponent={
           <View style={styles.empty}>
             <Text style={styles.emptyText}>
-              {activeTab === "fav" ? "Нет избранных" : "Нет избранных машин этого класса"}
+              {activeTab === "fav" ? "Нет избранных" : "Нет машин этого класса"}
             </Text>
           </View>
         }
