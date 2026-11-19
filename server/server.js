@@ -27,7 +27,7 @@ app.use(express.json());
 app.use("/images", express.static("images"));
 
 function logger(req, res, next) {
-    const time = new Date().toLocaleTimeString("ru-Ru");
+    const time = new Date().toLocaleTimeString("ru-RU");
     console.log(`[${time}] ${req.method} ${req.url}`)
     next();
 }
@@ -42,7 +42,7 @@ app.get("/api/health", (req, res) => {
 app.get("/api/cars", (req, res) => {
     const carClass = String(req.query.class ?? "").trim();
     const result = carClass ? cars.filter((car) => car.carClass === carClass) : cars;
-    res.json(result);
+    res.json(result.map(withStatus));
 });
 
 app.get("/api/cars/:id", (req, res) => {
@@ -51,7 +51,7 @@ app.get("/api/cars/:id", (req, res) => {
     if (!car) {
         return res.status(404).json({ error: "Автомобиль не найден" });
     }
-    res.json(car);
+    res.json(withStatus(car));
 });
 
 
@@ -94,15 +94,15 @@ app.post("/api/bookings", (req, res) => {
 
 //                  обработка ошибок
 app.use((req, res) => {
-    res.status(404).json({ error: `Маршрут ${req.method}`})
+    res.status(404).json({ error: `Маршрут ${req.method} ${req.url} не найден`})
 });
 
 app.use((err, req, res, next) => {
     if (err.type === "entity.parse.failed") {
-        return res.status(400).json({ error: "Туло запроса - некорректный JSON "});
+        return res.status(400).json({ error: "Тело запроса - некорректный JSON "});
     }
     console.error(err);
-    res.status(500).json({ error: "Внутрення ошибка сервера"});
+    res.status(500).json({ error: "Внутренняя ошибка сервера"});
 });
 
 
@@ -116,7 +116,7 @@ function validateBooking(body) {
         return "Тело запроса должно быть в формате JSON";
     }
     if (!Number.isInteger(body.carId)) {
-        return "Поле cardId обязательно и должно быть целым числом";
+        return "Поле carId обязательно и должно быть целым числом";
     }
     if (!cars.some((car) => car.id === body.carId)) {
         return `Автомобиля с id ${body.carId} не существует`;

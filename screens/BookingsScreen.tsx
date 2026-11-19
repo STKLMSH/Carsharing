@@ -16,8 +16,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "Bookings">;
 export function BookingsScreen({ navigation }: Props) {
     const { user } = useAuth();
     const phone = encodeURIComponent(user?.phone ?? "");
-    const { data: bookings, loading, error, reload } = useFetch<Booking[]>(`/bookings?
-phone=${phone}`);
+    const { data: bookings, loading, error, reload } = useFetch<Booking[]>(`/bookings?phone=${phone}`);
 
   function renderContent() {
     if (loading && !bookings) {

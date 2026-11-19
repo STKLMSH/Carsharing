@@ -59,7 +59,7 @@ export function BookingScreen({ route, navigation }: Props) {
   // Состояние отправки брони
   const [submitting, setSubmitting] = useState(false);
   const [booking, setBooking] = useState<Booking | null>(null);
-  const [bookingError, setBookingError] = useState<String | null>(null);
+  const [bookingError, setBookingError] = useState<string | null>(null);
 
   function decrease() {
     setDays((prev) => Math.max(MIN_DAYS, prev - 1));
@@ -105,7 +105,7 @@ export function BookingScreen({ route, navigation }: Props) {
 
   const tariff = [
     { label: "Цена за сутки", value: `${car.pricePerDay} BYN`},
-    { label: "Включенный пробег", value: car.mileage },
+    { label: "Включенный пробег", value: `${car.mileage} км` },
     { label: "Срок аренды", value: `${days} сут.`},
   ];
 
@@ -169,14 +169,14 @@ export function BookingScreen({ route, navigation }: Props) {
             {submitting
               ? "Отправляется..."
               : booking
-                ? "Забронированно"
+                ? "Забронировано"
                 : car.busy
                   ? "Автомобиль занят"
                   : "Забронировать"}
           </Button>
           {booking ? (
             <Text style={styles.success}>
-              Забронировано
+              Бронь № {booking.id} принята, к оплате {booking.total} BYN
             </Text>
           ) : null}
           {bookingError ? <Text style={styles.bookingError}>{bookingError}</Text> : null}
@@ -224,16 +224,13 @@ const styles = StyleSheet.create({
   buttonWrap: { marginTop: 12, gap: 8 },
   center: { justifyContent: "center", alignItems: "center", padding: 16 },
   success: {
-    padding: 12,
-    borderRadius: 12,
-    backgroundColor: colors.field,
     fontSize: 14,
     fontWeight: "600",
-    color: colors.textMain,
+    color: colors.correct,
     textAlign: "center",
   },
   bookingError: { fontSize: 14, fontWeight: "600", color: colors.error, textAlign: "center" },
-  tariff: { marginTop: 12, gap: 8 },
+  tariff: { marginTop: 8, gap: 4 },
   tariffRow: { flexDirection: "row", justifyContent: "space-between" },
   tariffLabel: { fontSize: 12, fontWeight: "600", color: colors.textMain },
   tariffValue: { fontSize: 12, fontWeight: "700", color: colors.textMain },

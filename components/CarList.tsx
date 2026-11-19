@@ -42,7 +42,7 @@ export function CarList({
                 <Ionicons
                     name={isFav ? "heart" : "heart-outline"}
                     size={24}
-                    color={isFav ? colors.details2 : colors.textSecondary}
+                    color={isFav ? colors.detailsSecondary : colors.textSecondary}
                 />
             </Pressable>
         </Pressable>

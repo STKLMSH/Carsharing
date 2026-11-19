@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     fontSize: 16,
     color: colors.textMain,
-    shadowColor: colors.shadow2,
+    shadowColor: colors.shadowSecondary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -199,5 +199,5 @@ const styles = StyleSheet.create({
   },
   circle: { position: "absolute" },
   circleBack: { backgroundColor: colors.details },
-  circleFront: { backgroundColor: colors.details2 },
+  circleFront: { backgroundColor: colors.detailsSecondary },
 });

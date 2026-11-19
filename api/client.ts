@@ -1,5 +1,5 @@
 // Единый модуль запросов
-export const SERVER_URL = "exp://10.1.1.83:8081";
+export const SERVER_URL = "http://10.1.1.83:3000";
 
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {
     let response: Response;
