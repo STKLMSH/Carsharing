@@ -61,7 +61,7 @@ app.get("/api/bookings", (req, res) => {
     if (!phone) {
         return res.status(400).json({ error: "Укажите телефон" })
     }
-    res.json(bookings.filter((booking) => onlyDigits(bookung.phone) === phone));
+    res.json(bookings.filter((booking) => onlyDigits(booking.phone) === phone));
 });
 
 app.post("/api/bookings", (req, res) => {
