@@ -26,7 +26,7 @@ export default function App() {
         >
           <Stack.Screen name="Registration" component={RegistrationScreen} />
           <Stack.Screen name="MapCars" component={MapCarsScreen} />
-          // Прозрачная модалка
+          {/* Прозрачная модалка */}
           <Stack.Screen
             name="CarOverlay"
             component={CarOverlayScreen}

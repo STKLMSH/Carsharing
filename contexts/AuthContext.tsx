@@ -12,7 +12,7 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-// Обёртка над useContext
+// Хранит пользователя и раздаёт его всем экранам
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
 
@@ -29,6 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 }
 
+// Обёртка над useContext
 export function useAuth() {
     const context = useContext(AuthContext);
     if (!context) {

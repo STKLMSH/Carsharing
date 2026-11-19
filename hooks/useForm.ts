@@ -13,12 +13,12 @@ export function useForm<T extends FormValues>(
 
     function handleChange(field: keyof T, value: string) {
     setValues((prev) => ({ ...prev, [field]: value }));
+    // если пользователь начал исправлять поле, то убираем ошибку
     setErrors((prev) => ({ ...prev, [field]: "" }));
 }
 
 function handleSubmit(onValid: (values: T) => void) {
     const nextErrors = validate(values);
-    // если пользователь начал исправлять поле, то убираем ошибку
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length === 0) {
         onValid(values);
