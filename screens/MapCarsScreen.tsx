@@ -5,8 +5,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../types"
 import type { Car, CarClass } from "../api/types";
+import { CAR_CLASS } from "../api/types";
 import { BackButton } from "../components/BackButton";
-import { CarList } from "../components/CarList";
+import { CarList, CAR_LIST_HEIGHT } from "../components/CarList";
 import { useAuth } from "../contexts/AuthContext";
 import { ErrorView } from "../components/ErrorView";
 import { useFetch } from "../hooks/useFetch";
@@ -23,9 +24,9 @@ const ROWS = [1, 2, 3, 4, 5, 6];
 
 const CLASSES: { value: CarClass | ""; label: string }[] = [
   { value: "", label: "Все" },
-  { value: "business", label: "Бизнес" },
-  { value: "premium", label: "Премиум" },
-  { value: "electric", label: "Электро" },
+  { value: "business", label: CAR_CLASS.business },
+  { value: "premium", label: CAR_CLASS.premium },
+  { value: "electric", label: CAR_CLASS.electric },
 ];
 
 // Экран «02 Карта с автомобилями»
@@ -85,6 +86,7 @@ export function MapCarsScreen({ navigation }: Props) {
           <CarList
             brand={item.brand}
             year={item.year}
+            carClass={item.carClass}
             pricePerDay={item.pricePerDay}
             image={{ uri: imageUrl(item.image) }}
             isFav={favIds.includes(item.id)}
@@ -321,6 +323,6 @@ const styles = StyleSheet.create({
   },
     badgeText: { fontSize: 12, fontWeight: "700", color: colors.textSecondary },
     listContent: { flexGrow: 1, paddingHorizontal: 16 },
-    empty: { flex: 1, height: 120, justifyContent: "center", alignItems: "center" },
+    empty: { flex: 1, height: CAR_LIST_HEIGHT, justifyContent: "center", alignItems: "center" },
     emptyText: { fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   });

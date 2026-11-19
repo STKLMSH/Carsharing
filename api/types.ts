@@ -32,3 +32,9 @@ export type NewBooking = {
     name: string;
     phone: string;
 };
+
+export const CAR_CLASS: Record<CarClass, string> = {
+    business: "бизнес",
+    premium: "премиум",
+    electric: "электро",
+};
