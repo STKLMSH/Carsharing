@@ -1,14 +1,17 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, ScrollView, StyleSheet } from "react-native";
+import { View, Text, Pressable, ScrollView, StyleSheet, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../types";
+import type { RootStackParamList } from "../types"
+import type { Booking, Car, NewBooking } from "../api/types";
 import { BackButton } from "../components/BackButton";
 import { CarCard } from "../components/CarCard";
 import { Button } from "../components/Button";
 import { useAuth } from "../contexts/AuthContext";
-import { getCar } from "../data/cars";
+import { ErrorView } from "../components/ErrorView";
+import { useFetch } from "../hooks/useFetch";
+import { imageUrl, postJson } from "../api/client";
 import { colors } from "../theme";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Booking">;
@@ -47,10 +50,16 @@ function PeriodRow({ title, date }: PeriodRowProps) {
 
 // Экран «03 Карточка автомобиля и бронирование»
 export function BookingScreen({ route, navigation }: Props) {
-  const car = getCar(route.params.carId);
+  const { carId } = route.params;
+  const { data: car, loading, error, reload } = useFetch<Car>(`/cars/${carId}`);
 
   const [days, setDays] = useState(MIN_DAYS);
   const { user } = useAuth();
+
+  // Состояние отправки брони
+  const [submitting, setSubmitting] = useState(false);
+  const [booking, setBooking] = useState<Booking | null>(null);
+  const [bookingError, setBookingError] = useState<String | null>(null);
 
   function decrease() {
     setDays((prev) => Math.max(MIN_DAYS, prev - 1));
@@ -58,6 +67,36 @@ export function BookingScreen({ route, navigation }: Props) {
 
   function increase() {
     setDays((prev) => Math.min(MAX_DAYS, prev + 1));
+  }
+
+  async function handleBooking() {
+    if (!user) return;
+    setSubmitting(true);
+    setBookingError(null);
+    try {
+      const newBooking: NewBooking = { carId, days, name: user.name, phone: user.phone };
+      const created = await postJson<Booking>("/bookings", newBooking);
+      setBooking(created);
+    } catch (e) {
+      setBookingError(e instanceof Error ? e.message : "Не удалось забронировать");
+    } finally {
+      setSubmitting(false);
+      reload();
+    }
+  }
+  if (loading && !car) {
+    return (
+      <SafeAreaView style={[styles.container, styles.center]}>
+        <ActivityIndicator size="large" color={colors.default} />
+      </SafeAreaView>
+    );
+  }
+  if (error || !car) {
+    return (
+      <SafeAreaView style={[styles.container, styles.center]}>
+        <ErrorView message={error ?? "Автомобиль не найден"} onRetry={reload} />
+      </SafeAreaView>
+    );
   }
 
   const total = car.pricePerDay * days;
@@ -80,7 +119,12 @@ export function BookingScreen({ route, navigation }: Props) {
           <BackButton onPress={() => navigation.goBack()} />
         </View>
 
-        <CarCard brand={car.brand} year={car.year} image={car.image} imageHeight={150} />
+        <CarCard 
+                brand={car.brand} 
+                year={car.year} 
+                image={{ uri: imageUrl(car.image) }} 
+                imageHeight={120} 
+              />
 
         <PeriodRow title="Получение" date= {formatDate(pickupDate)} />
         <PeriodRow title="Возврат" date= {formatDate(returnDate)} />
@@ -121,7 +165,21 @@ export function BookingScreen({ route, navigation }: Props) {
         </View>
 
         <View style={styles.buttonWrap}>
-          <Button disabled={!user}>Забронировать</Button>
+          <Button onPress={handleBooking} disabled={!user || submitting || car.busy}>
+            {submitting
+              ? "Отправляется..."
+              : booking
+                ? "Забронированно"
+                : car.busy
+                  ? "Автомобиль занят"
+                  : "Забронировать"}
+          </Button>
+          {booking ? (
+            <Text style={styles.success}>
+              Забронировано
+            </Text>
+          ) : null}
+          {bookingError ? <Text style={styles.bookingError}>{bookingError}</Text> : null}
         </View>
 
         <View style={styles.tariff}>
@@ -163,7 +221,18 @@ const styles = StyleSheet.create({
   dateSelector: { flex: 1 },
   placeSelector: { flex: 1 },
   dateText: { flex: 1, fontSize: 12, color: colors.textSecondary },
-  buttonWrap: { marginTop: 12 },
+  buttonWrap: { marginTop: 12, gap: 8 },
+  center: { justifyContent: "center", alignItems: "center", padding: 16 },
+  success: {
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: colors.field,
+    fontSize: 14,
+    fontWeight: "600",
+    color: colors.textMain,
+    textAlign: "center",
+  },
+  bookingError: { fontSize: 14, fontWeight: "600", color: colors.error, textAlign: "center" },
   tariff: { marginTop: 12, gap: 8 },
   tariffRow: { flexDirection: "row", justifyContent: "space-between" },
   tariffLabel: { fontSize: 12, fontWeight: "600", color: colors.textMain },
