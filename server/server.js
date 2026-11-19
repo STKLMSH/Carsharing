@@ -58,10 +58,10 @@ app.get("/api/cars/:id", (req, res) => {
 //                  маршруты бронирования
 app.get("/api/bookings", (req, res) => {
     const phone = onlyDigits(req.query.phone);
-    const result = phone
-        ? bookings.filter((booking) => onlyDigits(booking.phone) === phone)
-        : bookings;
-        res.json(result);
+    if (!phone) {
+        return res.status(400).json({ error: "Укажите телефон" })
+    }
+    res.json(bookings.filter((booking) => onlyDigits(bookung.phone) === phone));
 });
 
 app.post("/api/bookings", (req, res) => {

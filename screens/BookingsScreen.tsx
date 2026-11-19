@@ -19,6 +19,9 @@ export function BookingsScreen({ navigation }: Props) {
     const { data: bookings, loading, error, reload } = useFetch<Booking[]>(`/bookings?phone=${phone}`);
 
   function renderContent() {
+    if (!user) {
+        return <Text style={styles.hint}>Войдите, чтобы увидеть свои бронирования</Text>
+    }
     if (loading && !bookings) {
       return (
         <View style={styles.center}>

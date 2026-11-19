@@ -42,3 +42,6 @@ Content-Type: application/json
 
 ### История броней пользователя — 200
 GET http://localhost:3000/api/bookings?phone=375291234567
+
+### История без телефона — 400 
+GET http://localhost:3000/api/bookings
