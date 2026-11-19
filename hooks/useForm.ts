@@ -3,6 +3,7 @@ import { useState } from "react";
 type FormValues = Record<string, string>; 
 type FormErrors = Record<string, string>; 
 
+// Логика формы
 export function useForm<T extends FormValues>(
     initialValues: T,
     validate: (values: T) => FormErrors
@@ -17,6 +18,7 @@ export function useForm<T extends FormValues>(
 
 function handleSubmit(onValid: (values: T) => void) {
     const nextErrors = validate(values);
+    // если пользователь начал исправлять поле, то убираем ошибку
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length === 0) {
         onValid(values);

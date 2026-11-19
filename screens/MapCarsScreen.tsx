@@ -22,6 +22,7 @@ type Tab = "all" | "fav";
 
 const ROWS = [1, 2, 3, 4, 5, 6];
 
+// Кнопки фильтра по классу
 const CLASSES: { value: CarClass | ""; label: string }[] = [
   { value: "", label: "Все" },
   { value: "business", label: CAR_CLASS.business },
@@ -31,14 +32,17 @@ const CLASSES: { value: CarClass | ""; label: string }[] = [
 
 // Экран «02 Карта с автомобилями»
 export function MapCarsScreen({ navigation }: Props) {
+  // Избранное хранится только в приложении
   const [favIds, setFavIds] = useState<number[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>("all");
   const [carClass, setCarClass] = useState<CarClass | "">("");
   const { user, logout } = useAuth();
 
+  // Фильтрует сервер
   const query = carClass ? `?class=${carClass}` : "";
   const { data: cars, loading, error, reload } = useFetch<Car[]>(`/cars${query}`);
 
+  // Карта остаётся в стеке под бронированием. При возврате обновляем данные, т.к. машина могла стать занятой
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", reload);
     return unsubscribe;
@@ -63,7 +67,7 @@ export function MapCarsScreen({ navigation }: Props) {
   const visibleCars =
     activeTab === "all" ? allCars : allCars.filter((car) => favIds.includes(car.id));
 
-  {/* Загрузка */}
+  {/* Содержимое нижней панели в зависимости от состояния загрузки */}
   function renderList() {
     if (loading && !cars) {
       return (

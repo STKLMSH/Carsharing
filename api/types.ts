@@ -1,4 +1,4 @@
-// Типы ответов сервера
+// Контракт API
 export type CarClass = "business" | "premium" | "electric";
 
 export type Car = {

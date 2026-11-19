@@ -13,6 +13,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "Registration">;
 
 type RegistrationValues = { name: string; phone: string };
 
+// Проверка формы
 function validate(values: RegistrationValues) {
   const errors: Record<string, string> = {};
 
@@ -22,6 +23,7 @@ function validate(values: RegistrationValues) {
     errors.name = "Имя должно быть не короче 2 букв";
   }
 
+  // Проверяются только вводимые цифры
   const digits = values.phone.replace(/\D/g, "");
   if (!digits) {
     errors.phone = "Введите номер телефона";
@@ -32,6 +34,7 @@ function validate(values: RegistrationValues) {
   return errors;
 }
 
+// Приводит номер к виду +375 XX XXX-XX-XX
 function formatPhone(phone: string) {
   const d = phone.replace(/\D/g, "");
   return `+${d.slice(0, 3)} ${d.slice(3, 5)} ${d.slice(5, 8)}-${d.slice(8, 10)}-${d.slice(10, 12)}`;
@@ -50,6 +53,7 @@ export function RegistrationScreen({ navigation }: Props) {
 
     function onSubmit() {
       handleSubmit((validValues) => {
+        // в контекст кладем только результат ввода, который читают другие экраны
         login({ name: validValues.name.trim(), phone: formatPhone(validValues.phone) })
         navigation.navigate("MapCars");
       });

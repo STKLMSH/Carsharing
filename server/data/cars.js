@@ -1,3 +1,4 @@
+// Каталог машин
 export const cars = [
     {
         id: 1,

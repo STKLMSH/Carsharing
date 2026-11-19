@@ -1,8 +1,9 @@
-// Единый модуль запросов
+// Все запросу к серверу идут через этот модуль
 export const SERVER_URL = "http://10.1.1.83:3000";
 
 export async function request<T>(path: string, init?: RequestInit): Promise<T> {
     let response: Response;
+    // fetch выкидывает исключение, только если сервер выключен или неверный адрес
     try {
         response = await fetch(`${SERVER_URL}/api${path}`, init);
     } catch {
@@ -17,6 +18,7 @@ export async function request<T>(path: string, init?: RequestInit): Promise<T> {
     return data as T;
 }
 
+// POST с JSON-телом; без заголовка Content-Type сервер не заполнит req.body
 export function postJson<T>(path: string, body: unknown): Promise<T> {
     return request<T>(path, {
         method: "POST",
@@ -25,6 +27,7 @@ export function postJson<T>(path: string, body: unknown): Promise<T> {
     });
 }
 
+// Картинки раздаёт сервер
 export function imageUrl(path: string) {
     return `${SERVER_URL}${path}`;
 }

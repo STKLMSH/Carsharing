@@ -10,10 +10,13 @@ import { BookingsScreen } from "./screens/BookingsScreen";
 import { AuthProvider } from "./contexts/AuthContext";
 import type { RootStackParamList } from "./types";
 
+// Стек экранов
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
+
   return (
+    // Пользователь из контекста доступен на любом экране
     <AuthProvider>
       <NavigationContainer>
         <StatusBar style="dark" />
@@ -23,6 +26,7 @@ export default function App() {
         >
           <Stack.Screen name="Registration" component={RegistrationScreen} />
           <Stack.Screen name="MapCars" component={MapCarsScreen} />
+          // Прозрачная модалка
           <Stack.Screen
             name="CarOverlay"
             component={CarOverlayScreen}

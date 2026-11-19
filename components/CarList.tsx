@@ -5,6 +5,7 @@ import { colors } from "../theme";
 import { CAR_CLASS } from "../api/types";
 import type { CarClass } from "../api/types";
 
+// Высота карточки
 export const CAR_LIST_HEIGHT = 128;
 
 type CarListProps = {
@@ -18,6 +19,7 @@ type CarListProps = {
     onPress: () => void;
 };
 
+// Карточка машины в списке на карте. Своего состояния нет: избранное хранит экран и передаёт через props
 export function CarList({
     brand,
     year,
