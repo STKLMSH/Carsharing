@@ -165,7 +165,7 @@ export function BookingScreen({ route, navigation }: Props) {
         </View>
 
         <View style={styles.buttonWrap}>
-          <Button onPress={handleBooking} disabled={!user || submitting || car.busy}>
+          <Button onPress={handleBooking} disabled={!user || submitting || booking !== null || car.busy}>
             {submitting
               ? "Отправляется..."
               : booking
