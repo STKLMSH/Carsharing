@@ -6,6 +6,7 @@ import { RegistrationScreen } from "./screens/RegistrationScreen";
 import { MapCarsScreen } from "./screens/MapCarsScreen";
 import { CarOverlayScreen } from "./screens/CarOverlay";
 import { BookingScreen } from "./screens/BookingScreen";
+import { BookingsScreen } from "./screens/BookingsScreen";
 import { AuthProvider } from "./contexts/AuthContext";
 import type { RootStackParamList } from "./types";
 
@@ -33,6 +34,7 @@ export default function App() {
             }}
           />
           <Stack.Screen name="Booking" component={BookingScreen} />
+          <Stack.Screen name="Bookings" component={BookingsScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>
