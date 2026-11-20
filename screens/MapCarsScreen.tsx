@@ -73,7 +73,7 @@ export function MapCarsScreen({ navigation }: Props) {
   function renderList() {
     if (loading && !cars) {
       return (
-        <View style={styles.empty}>
+        <View style={styles.loader}>
           <ActivityIndicator size="large" color={colors.default} />
         </View>
       );
@@ -329,6 +329,7 @@ const styles = StyleSheet.create({
   },
     badgeText: { fontSize: 12, fontWeight: "700", color: colors.textSecondary },
     listContent: { flexGrow: 1, paddingHorizontal: 16 },
+    loader: { height: CAR_LIST_HEIGHT, justifyContent: "center", alignItems: "center" },
     empty: { flex: 1, height: CAR_LIST_HEIGHT, justifyContent: "center", alignItems: "center" },
     emptyText: { fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   });

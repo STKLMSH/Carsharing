@@ -52,7 +52,7 @@ export function BookingsScreen({ navigation }: Props) {
             <Text style={styles.total}>{item.total} BYN</Text>
           </View>
         )}
-        ListEmptyComponent={<Text style={styles.hint}>Бронирований пока нет</Text>}
+        ListEmptyComponent={<Text style={styles.hint}>Вы ещё ничего не бронировали</Text>}
       />
     );
   }
