@@ -8,6 +8,12 @@ const PORT = 3000;
 const bookings = [];
 let nextBookingId = 1;
 
+const MIN_DAYS = 1;
+const MAX_DAYS = 30;
+const MIN_NAME_LENGTH = 2;
+const PHONE_LENGTH = 12;
+const PHONE_PREFIX = "375";
+
 function isBusy(carId) {
     return bookings.some((booking) => booking.carId === carId);
 }
@@ -121,15 +127,15 @@ function validateBooking(body) {
     if (!cars.some((car) => car.id === body.carId)) {
         return `Автомобиля с id ${body.carId} не существует`;
     }
-    if (!Number.isInteger(body.days) || body.days < 1 || body.days > 30) {
-        return "Срок аренды должен быть целым числом от 1 до 30 суток";
+    if (!Number.isInteger(body.days) || body.days < MIN_DAYS || body.days > MAX_DAYS) {
+        return `Срок аренды должен быть целым числом от ${MIN_DAYS} до ${MAX_DAYS} суток`;
     }
-    if (typeof body.name !== "string" || body.name.trim().length < 2) {
-        return "Имя водителя не должно быть короче 2 символов";
+    if (typeof body.name !== "string" || body.name.trim().length < MIN_NAME_LENGTH) {
+        return `Имя водителя не должно быть короче ${MIN_NAME_LENGTH} символов`;
     }
     const digits = onlyDigits(body.phone);
-    if (digits.length !== 12 || !digits.startsWith("375")) {
-        return "Телефон должен быть в формате +375 XX XXX-XX-XX";
+    if (digits.length !== PHONE_LENGTH || !digits.startsWith(PHONE_PREFIX)) {
+        return `Телефон должен быть в формате +${PHONE_PREFIX} XX XXX-XX-XX`;
     }
     return null;
 }

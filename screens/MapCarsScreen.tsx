@@ -22,6 +22,8 @@ type Tab = "all" | "fav";
 
 const ROWS = [1, 2, 3, 4, 5, 6];
 
+const MARKER_SIZE = 44;
+
 // Кнопки фильтра по классу
 const CLASSES: { value: CarClass | ""; label: string }[] = [
   { value: "", label: "Все" },
@@ -285,7 +287,7 @@ const styles = StyleSheet.create({
   classText: { fontSize: 13, fontWeight: "600", color: colors.textMain },
   markersLayer: { flex: 1, paddingBottom: 16 },
   markerRow: { flex: 1, justifyContent: "center" },
-  marker: { width: 44, height: 44 },
+  marker: { width: MARKER_SIZE, height: MARKER_SIZE },
   markerPressed: { transform: [{ scale: 1.1 }] },
   panel: {
     backgroundColor: colors.background,

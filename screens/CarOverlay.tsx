@@ -15,6 +15,12 @@ type Props = NativeStackScreenProps<RootStackParamList, "CarOverlay">;
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
+const BACKDROP_OPACITY = 0.4;
+const FADE_IN = 250;
+const SLIDE_IN = 300;
+const FADE_OUT = 200;
+const SLIDE_OUT = 250;
+
 export function CarOverlayScreen({ route, navigation }: Props) {
   const { carId } = route.params;
   const { data: car, loading, error, reload } = useFetch<Car>(`/cars/${carId}`);
@@ -25,13 +31,13 @@ export function CarOverlayScreen({ route, navigation }: Props) {
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
-        toValue: 0.4,
-        duration: 250,
+        toValue: BACKDROP_OPACITY,
+        duration: FADE_IN,
         useNativeDriver: true,
       }),
       Animated.timing(slideAnim, {
         toValue: 0, 
-        duration: 300,
+        duration: SLIDE_IN,
         useNativeDriver: true,
       }),
     ]).start();
@@ -41,12 +47,12 @@ export function CarOverlayScreen({ route, navigation }: Props) {
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 0,
-        duration: 200,
+        duration: FADE_OUT,
         useNativeDriver: true,
       }),
       Animated.timing(slideAnim, {
         toValue: SCREEN_HEIGHT, 
-        duration: 250,
+        duration: SLIDE_OUT,
         useNativeDriver: true,
       }),
     ]).start(() => {
@@ -94,7 +100,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "black", 
+    backgroundColor: colors.shadow, 
   },
   pressableArea: { flex: 1 }, 
   sheet: {

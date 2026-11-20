@@ -19,11 +19,13 @@ type Props = NativeStackScreenProps<RootStackParamList, "Booking">;
 const MIN_DAYS = 1;
 const MAX_DAYS = 30;
 const MONTHS = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "нояб", "дек"];
-const PICKUP_DAY = 12;
+const PICKUP_YEAR = 2026;
 const PICKUP_MONTH = 8;
+const PICKUP_DAY = 12;
+const PICKUP_TIME = "10:00";
 
 function formatDate(date: Date) {
-  return `${date.getDate()} ${MONTHS[date.getMonth()]} · 10:00`;
+  return `${date.getDate()} ${MONTHS[date.getMonth()]} · ${PICKUP_TIME}`;
 }
 
 type PeriodRowProps = { title: string; date: string };
@@ -100,8 +102,8 @@ export function BookingScreen({ route, navigation }: Props) {
   }
 
   const total = car.pricePerDay * days;
-  const pickupDate = new Date(2026, PICKUP_MONTH, PICKUP_DAY);
-  const returnDate = new Date(2026, PICKUP_MONTH, PICKUP_DAY + days);
+  const pickupDate = new Date(PICKUP_YEAR, PICKUP_MONTH, PICKUP_DAY);
+  const returnDate = new Date(PICKUP_YEAR, PICKUP_MONTH, PICKUP_DAY + days);
 
   const tariff = [
     { label: "Цена за сутки", value: `${car.pricePerDay} BYN`},
