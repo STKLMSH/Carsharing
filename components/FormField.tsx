@@ -9,6 +9,7 @@ type FormFieldProps = {
     children: ReactNode; 
 };
 
+// Обёртка поля формы
 export function FormField({ label, error, children }: FormFieldProps) {
     return (
         <View style={styles.field}>

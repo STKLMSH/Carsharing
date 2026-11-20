@@ -1,0 +1,47 @@
+### Список автомобилей — 200
+GET http://localhost:3000/api/cars
+
+### Фильтр по классу — 200
+GET http://localhost:3000/api/cars?class=electric
+
+### Автомобиль по id — ожидаем 200
+GET http://localhost:3000/api/cars/2
+
+### Несуществующий автомобиль — 404
+GET http://localhost:3000/api/cars/99
+
+### Корректная бронь —  201
+POST http://localhost:3000/api/bookings
+Content-Type: application/json
+
+{ "carId": 2, "days": 3, "name": "Эл", "phone": "+375 29 123-45-67" }
+
+### Та же машина ещё раз — 409 
+POST http://localhost:3000/api/bookings
+Content-Type: application/json
+
+{ "carId": 2, "days": 1, "name": "Кирилл", "phone": "+375 33 765-43-21" }
+
+### Несуществующая машина — 400
+POST http://localhost:3000/api/bookings
+Content-Type: application/json
+
+{ "carId": 42, "days": 3, "name": "Эл", "phone": "+375 29 123-45-67" }
+
+### Срок 45 суток — 400
+POST http://localhost:3000/api/bookings
+Content-Type: application/json
+
+{ "carId": 3, "days": 45, "name": "Эл", "phone": "+375 29 123-45-67" }
+
+### Неверный телефон — 400
+POST http://localhost:3000/api/bookings
+Content-Type: application/json
+
+{ "carId": 3, "days": 2, "name": "Иван", "phone": "29123" }
+
+### История броней пользователя — 200
+GET http://localhost:3000/api/bookings?phone=375291234567
+
+### История без телефона — 400 
+GET http://localhost:3000/api/bookings

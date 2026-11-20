@@ -1,14 +1,17 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, ScrollView, StyleSheet } from "react-native";
+import { View, Text, Pressable, ScrollView, StyleSheet, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import type { RootStackParamList } from "../types";
+import type { RootStackParamList } from "../types"
+import type { Booking, Car, NewBooking } from "../api/types";
 import { BackButton } from "../components/BackButton";
 import { CarCard } from "../components/CarCard";
 import { Button } from "../components/Button";
 import { useAuth } from "../contexts/AuthContext";
-import { getCar } from "../data/cars";
+import { ErrorView } from "../components/ErrorView";
+import { useFetch } from "../hooks/useFetch";
+import { imageUrl, postJson } from "../api/client";
 import { colors } from "../theme";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Booking">;
@@ -16,11 +19,13 @@ type Props = NativeStackScreenProps<RootStackParamList, "Booking">;
 const MIN_DAYS = 1;
 const MAX_DAYS = 30;
 const MONTHS = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "нояб", "дек"];
-const PICKUP_DAY = 12;
+const PICKUP_YEAR = 2026;
 const PICKUP_MONTH = 8;
+const PICKUP_DAY = 12;
+const PICKUP_TIME = "10:00";
 
 function formatDate(date: Date) {
-  return `${date.getDate()} ${MONTHS[date.getMonth()]} · 10:00`;
+  return `${date.getDate()} ${MONTHS[date.getMonth()]} · ${PICKUP_TIME}`;
 }
 
 type PeriodRowProps = { title: string; date: string };
@@ -47,10 +52,16 @@ function PeriodRow({ title, date }: PeriodRowProps) {
 
 // Экран «03 Карточка автомобиля и бронирование»
 export function BookingScreen({ route, navigation }: Props) {
-  const car = getCar(route.params.carId);
+  const { carId } = route.params;
+  const { data: car, loading, error, reload } = useFetch<Car>(`/cars/${carId}`);
 
   const [days, setDays] = useState(MIN_DAYS);
   const { user } = useAuth();
+
+  // Состояние отправки брони
+  const [submitting, setSubmitting] = useState(false);
+  const [booking, setBooking] = useState<Booking | null>(null);
+  const [bookingError, setBookingError] = useState<string | null>(null);
 
   function decrease() {
     setDays((prev) => Math.max(MIN_DAYS, prev - 1));
@@ -60,13 +71,43 @@ export function BookingScreen({ route, navigation }: Props) {
     setDays((prev) => Math.min(MAX_DAYS, prev + 1));
   }
 
+  async function handleBooking() {
+    if (!user) return;
+    setSubmitting(true);
+    setBookingError(null);
+    try {
+      const newBooking: NewBooking = { carId, days, name: user.name, phone: user.phone };
+      const created = await postJson<Booking>("/bookings", newBooking);
+      setBooking(created);
+    } catch (e) {
+      setBookingError(e instanceof Error ? e.message : "Не удалось забронировать");
+    } finally {
+      setSubmitting(false);
+      reload();
+    }
+  }
+  if (loading && !car) {
+    return (
+      <SafeAreaView style={[styles.container, styles.center]}>
+        <ActivityIndicator size="large" color={colors.default} />
+      </SafeAreaView>
+    );
+  }
+  if (error || !car) {
+    return (
+      <SafeAreaView style={[styles.container, styles.center]}>
+        <ErrorView message={error ?? "Автомобиль не найден"} onRetry={reload} />
+      </SafeAreaView>
+    );
+  }
+
   const total = car.pricePerDay * days;
-  const pickupDate = new Date(2026, PICKUP_MONTH, PICKUP_DAY);
-  const returnDate = new Date(2026, PICKUP_MONTH, PICKUP_DAY + days);
+  const pickupDate = new Date(PICKUP_YEAR, PICKUP_MONTH, PICKUP_DAY);
+  const returnDate = new Date(PICKUP_YEAR, PICKUP_MONTH, PICKUP_DAY + days);
 
   const tariff = [
     { label: "Цена за сутки", value: `${car.pricePerDay} BYN`},
-    { label: "Включенный пробег", value: car.mileage },
+    { label: "Включенный пробег", value: `${car.mileage} км` },
     { label: "Срок аренды", value: `${days} сут.`},
   ];
 
@@ -80,7 +121,12 @@ export function BookingScreen({ route, navigation }: Props) {
           <BackButton onPress={() => navigation.goBack()} />
         </View>
 
-        <CarCard brand={car.brand} year={car.year} image={car.image} imageHeight={150} />
+        <CarCard 
+                brand={car.brand} 
+                year={car.year} 
+                image={{ uri: imageUrl(car.image) }} 
+                imageHeight={120} 
+              />
 
         <PeriodRow title="Получение" date= {formatDate(pickupDate)} />
         <PeriodRow title="Возврат" date= {formatDate(returnDate)} />
@@ -121,7 +167,21 @@ export function BookingScreen({ route, navigation }: Props) {
         </View>
 
         <View style={styles.buttonWrap}>
-          <Button disabled={!user}>Забронировать</Button>
+          <Button onPress={handleBooking} disabled={!user || submitting || booking !== null || car.busy}>
+            {submitting
+              ? "Отправляется..."
+              : booking
+                ? "Забронировано"
+                : car.busy
+                  ? "Автомобиль занят"
+                  : "Забронировать"}
+          </Button>
+          {booking ? (
+            <Text style={styles.success}>
+              Бронь № {booking.id} принята, к оплате {booking.total} BYN
+            </Text>
+          ) : null}
+          {bookingError ? <Text style={styles.bookingError}>{bookingError}</Text> : null}
         </View>
 
         <View style={styles.tariff}>
@@ -163,8 +223,16 @@ const styles = StyleSheet.create({
   dateSelector: { flex: 1 },
   placeSelector: { flex: 1 },
   dateText: { flex: 1, fontSize: 12, color: colors.textSecondary },
-  buttonWrap: { marginTop: 12 },
-  tariff: { marginTop: 12, gap: 8 },
+  buttonWrap: { marginTop: 12, gap: 8 },
+  center: { justifyContent: "center", alignItems: "center", padding: 16 },
+  success: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: colors.correct,
+    textAlign: "center",
+  },
+  bookingError: { fontSize: 14, fontWeight: "600", color: colors.error, textAlign: "center" },
+  tariff: { marginTop: 8, gap: 4 },
   tariffRow: { flexDirection: "row", justifyContent: "space-between" },
   tariffLabel: { fontSize: 12, fontWeight: "600", color: colors.textMain },
   tariffValue: { fontSize: 12, fontWeight: "700", color: colors.textMain },

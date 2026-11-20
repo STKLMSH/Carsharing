@@ -4,7 +4,7 @@ import { colors } from "../theme";
 
 type CarCardProps = {
   brand: string;
-  year: string;
+  year: number;
   image: ImageSourcePropType;
   imageHeight?: number;
 };

@@ -3,6 +3,7 @@ import { useState } from "react";
 type FormValues = Record<string, string>; 
 type FormErrors = Record<string, string>; 
 
+// Логика формы
 export function useForm<T extends FormValues>(
     initialValues: T,
     validate: (values: T) => FormErrors
@@ -12,6 +13,7 @@ export function useForm<T extends FormValues>(
 
     function handleChange(field: keyof T, value: string) {
     setValues((prev) => ({ ...prev, [field]: value }));
+    // если пользователь начал исправлять поле, то убираем ошибку
     setErrors((prev) => ({ ...prev, [field]: "" }));
 }
 

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 
+// Вошедший пользователь
 export type User = { name: string; phone: string };
 
 type AuthContextValue = {
@@ -11,6 +12,7 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+// Хранит пользователя и раздаёт его всем экранам
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
 
@@ -27,6 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 }
 
+// Обёртка над useContext
 export function useAuth() {
     const context = useContext(AuthContext);
     if (!context) {

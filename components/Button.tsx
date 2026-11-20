@@ -2,6 +2,7 @@ import React from "react";
 import { Pressable, Text, StyleSheet } from "react-native";
 import { colors } from "../theme";
 
+// Кнопка приложения с 2-мя состояниями: primary - основная; link - ссылка
 type ButtonVariant = "primary" | "link";
     
 type ButtonProps = {
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
     },
     primary: {
         backgroundColor: colors.default,
-        shadowColor: colors.shadow2,
+        shadowColor: colors.shadowSecondary,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.5,
         shadowRadius: 4,

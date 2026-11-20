@@ -13,25 +13,35 @@ type Props = NativeStackScreenProps<RootStackParamList, "Registration">;
 
 type RegistrationValues = { name: string; phone: string };
 
+const MIN_NAME_LENGTH = 2;
+const PHONE_LENGTH = 12; 
+const PHONE_PREFIX = "375";
+
+const FRONT_CIRCLE_SCALE = 1.25;
+const BACK_CIRCLE_SCALE = 0.75;
+
+// Проверка формы
 function validate(values: RegistrationValues) {
   const errors: Record<string, string> = {};
 
   if (!values.name.trim()) {
     errors.name = "Введите имя";
-  } else if (values.name.trim().length < 2) {
-    errors.name = "Имя должно быть не короче 2 букв";
+  } else if (values.name.trim().length < MIN_NAME_LENGTH) {
+    errors.name = `Имя должно быть не короче ${MIN_NAME_LENGTH} букв`;
   }
 
+  // Проверяются только вводимые цифры
   const digits = values.phone.replace(/\D/g, "");
   if (!digits) {
     errors.phone = "Введите номер телефона";
-  } else if (digits.length !== 12 || !digits.startsWith("375")) {
+  } else if (digits.length !== PHONE_LENGTH || !digits.startsWith(PHONE_PREFIX)) {
     errors.phone = "Номер телефона набран некорректно";
   }
 
   return errors;
 }
 
+// Приводит номер к виду +375 XX XXX-XX-XX
 function formatPhone(phone: string) {
   const d = phone.replace(/\D/g, "");
   return `+${d.slice(0, 3)} ${d.slice(3, 5)} ${d.slice(5, 8)}-${d.slice(8, 10)}-${d.slice(10, 12)}`;
@@ -40,8 +50,8 @@ function formatPhone(phone: string) {
 // Экран «01 Регистрация»
 export function RegistrationScreen({ navigation }: Props) {
     const { width } = useWindowDimensions();
-    const front = width * 1.25; 
-    const back = width * 0.75; 
+    const front = width * FRONT_CIRCLE_SCALE; 
+    const back = width * BACK_CIRCLE_SCALE; 
     const { login } = useAuth();
     const { values, errors, handleChange, handleSubmit } = useForm<RegistrationValues>(
       { name: "", phone: "" },
@@ -50,6 +60,7 @@ export function RegistrationScreen({ navigation }: Props) {
 
     function onSubmit() {
       handleSubmit((validValues) => {
+        // в контекст кладем только результат ввода, который читают другие экраны
         login({ name: validValues.name.trim(), phone: formatPhone(validValues.phone) })
         navigation.navigate("MapCars");
       });
@@ -181,7 +192,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     fontSize: 16,
     color: colors.textMain,
-    shadowColor: colors.shadow2,
+    shadowColor: colors.shadowSecondary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -199,5 +210,5 @@ const styles = StyleSheet.create({
   },
   circle: { position: "absolute" },
   circleBack: { backgroundColor: colors.details },
-  circleFront: { backgroundColor: colors.details2 },
+  circleFront: { backgroundColor: colors.detailsSecondary },
 });
