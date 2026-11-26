@@ -51,6 +51,19 @@ function toCar(row) {
     return { ...row, busy: row.busy === 1 };
 }
 
+// Поля брони в ответе
+const BOOKING_FIELDS = `
+    b.id, b.car_id AS carId, c.brand AS carBrand, b.days, b.total, b.name, b.phone,
+    b.status, b.starts_at AS startsAt, b.created_at AS createdAt`;
+
+function findBooking(id) {
+    return db.prepare(`
+        SELECT ${BOOKING_FIELDS}
+        FROM bookings b JOIN cars c ON c.id = b.car_id
+        WHERE b.id = ?
+    `).get(id);
+}
+
 //                  маршруты машин
 app.get("/api/cars", (req, res) => {
     const carClass = String(req.query.class ?? "").trim();
@@ -80,7 +93,13 @@ app.get("/api/bookings", (req, res) => {
     if (!phone) {
         return res.status(400).json({ error: "Укажите телефон" })
     }
-    res.json(bookings.filter((booking) => onlyDigits(booking.phone) === phone));
+    const bookings = db.prepare(`
+        SELECT ${BOOKING_FIELDS}
+        FROM bookings b JOIN cars c ON c.id = b.car_id
+        WHERE b.phone = ?
+        ORDER BY b.id DESC
+    `).all(phone);
+    res.json(bookings);
 });
 
 app.post("/api/bookings", (req, res) => {
@@ -90,24 +109,22 @@ app.post("/api/bookings", (req, res) => {
     }
 
     const { carId, days, name, phone } = req.body;
-    const car = cars.find((item) => item.id === carId);
+    const car = db.prepare("SELECT brand, price_per_day FROM cars WHERE id = ?").get(carId);
+    const startsAt = req.body.startsAt ? new Date(req.body.startsAt).toISOString() : defaultStart();
 
-    if (isBusy(carId)) {
-        return res.status(409).json({ error: `${car.brand} уже забронирован`}); 
+    try {
+        const { lastInsertRowid } = db.prepare(`
+            INSERT INTO bookings (car_id, days, total, name, phone, starts_at, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `).run(carId, days, car.price_per_day * days, name.trim(), onlyDigits(phone),
+            startsAt, new Date().toISOString());
+        res.status(201).json(findBooking(lastInsertRowid));
+    } catch (err) {
+        if (err.message.includes("UNIQUE")) {
+            return res.status(409).json({ error: `${car.brand} уже забронирован` });
+        }
+        throw err;
     }
-
-    const booking = {
-        id: nextBookingId++,
-        carId,
-        carBrand: car.brand,
-        days,
-        total: car.pricePerDay * days,
-        name: name.trim(),
-        phone,
-        createdAt: new Date().toISOString(),
-    };
-    bookings.push(booking);
-    res.status(201).json(booking);
 });
 
 
@@ -129,7 +146,6 @@ app.listen(PORT, () => {
     console.log(`Сервер запущен: http://localhost:${PORT}`);
 });
 
-
 function validateBooking(body) {
     if (!body) {
         return "Тело запроса должно быть в формате JSON";
@@ -137,7 +153,8 @@ function validateBooking(body) {
     if (!Number.isInteger(body.carId)) {
         return "Поле carId обязательно и должно быть целым числом";
     }
-    if (!cars.some((car) => car.id === body.carId)) {
+    const exists = db.prepare("SELECT 1 FROM cars WHERE id = ?").get(body.carId);
+    if (!exists) {
         return `Автомобиля с id ${body.carId} не существует`;
     }
     if (!Number.isInteger(body.days) || body.days < MIN_DAYS || body.days > MAX_DAYS) {
@@ -149,6 +166,15 @@ function validateBooking(body) {
     const digits = onlyDigits(body.phone);
     if (digits.length !== PHONE_LENGTH || !digits.startsWith(PHONE_PREFIX)) {
         return `Телефон должен быть в формате +${PHONE_PREFIX} XX XXX-XX-XX`;
+    }
+    if (body.startsAt !== undefined) {
+        const start = new Date(body.startsAt);
+        if (typeof body.startsAt !== "string" || Number.isNaN(start.getTime())) {
+            return "Поле startsAt должно быть датой в формате ISO";
+        }
+        if (start <= new Date()) {
+            return "Начало аренды должно быть в будущем";
+        }
     }
     return null;
 }
