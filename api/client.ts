@@ -18,14 +18,24 @@ export async function request<T>(path: string, init?: RequestInit): Promise<T> {
     return data as T;
 }
 
-// POST с JSON-телом; без заголовка Content-Type сервер не заполнит req.body
-export function postJson<T>(path: string, body: unknown): Promise<T> {
+// Запрос с JSON-телом: общий код для POST и PATCH
+// Без заголовка Content-Type сервер не заполнит req.body
+function sendJson<T>(method: string, path: string, body: unknown): Promise<T> {
     return request<T>(path, {
-        method: "POST",
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
     });
 }
+
+export function postJson<T>(path: string, body: unknown): Promise<T> {
+    return sendJson<T>("POST", path, body);
+}
+
+export function patchJson<T>(path: string, body: unknown): Promise<T> {
+    return sendJson<T>("PATCH", path, body);
+}
+
 
 // Картинки раздаёт сервер
 export function imageUrl(path: string) {

@@ -42,7 +42,7 @@ app.get("/api/health", (req, res) => {
 
 const CAR_FIELDS = `
     c.id, c.brand, c.year, c.car_class AS carClass, c.price_per_day AS pricePerDay,
-    c.mileage, c.image, c.map_row AS row, c.map_align AS align, c.map_offSet AS offset,
+    c.mileage, c.image, c.map_row AS row, c.map_align AS align, c.map_offset AS offset,
     EXISTS (
         SELECT 1 FROM bookings b WHERE b.car_id = c.id AND b.status = 'active'
     ) AS busy`;
@@ -174,7 +174,7 @@ app.use((req, res) => {
 
 app.use((err, req, res, next) => {
     if (err.type === "entity.parse.failed") {
-        return res.status(400).json({ error: "Тело запроса - некорректный JSON "});
+        return res.status(400).json({ error: "Тело запроса - некорректный JSON"});
     }
     console.error(err);
     res.status(500).json({ error: "Внутренняя ошибка сервера"});

@@ -19,13 +19,18 @@ type Props = NativeStackScreenProps<RootStackParamList, "Booking">;
 const MIN_DAYS = 1;
 const MAX_DAYS = 30;
 const MONTHS = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "нояб", "дек"];
-const PICKUP_YEAR = 2026;
-const PICKUP_MONTH = 8;
-const PICKUP_DAY = 12;
-const PICKUP_TIME = "10:00";
+const PICKUP_HOUR = 10;
+
+function tomorrowPickup() {
+  const date = new Date();
+  date.setDate(date.getDate() + 1);
+  date.setHours(PICKUP_HOUR, 0, 0, 0);
+  return date;
+}
 
 function formatDate(date: Date) {
-  return `${date.getDate()} ${MONTHS[date.getMonth()]} · ${PICKUP_TIME}`;
+  const time = `${String(date.getHours()).padStart(2,"0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+  return `${date.getDate()} ${MONTHS[date.getMonth()]} · ${time}`;
 }
 
 type PeriodRowProps = { title: string; date: string };
@@ -56,6 +61,7 @@ export function BookingScreen({ route, navigation }: Props) {
   const { data: car, loading, error, reload } = useFetch<Car>(`/cars/${carId}`);
 
   const [days, setDays] = useState(MIN_DAYS);
+  const [pickupDate] = useState(tomorrowPickup);
   const { user } = useAuth();
 
   // Состояние отправки брони
@@ -76,7 +82,7 @@ export function BookingScreen({ route, navigation }: Props) {
     setSubmitting(true);
     setBookingError(null);
     try {
-      const newBooking: NewBooking = { carId, days, name: user.name, phone: user.phone };
+      const newBooking: NewBooking = { carId, days, name: user.name, phone: user.phone, startsAt: pickupDate.toISOString(), };
       const created = await postJson<Booking>("/bookings", newBooking);
       setBooking(created);
     } catch (e) {
@@ -102,8 +108,8 @@ export function BookingScreen({ route, navigation }: Props) {
   }
 
   const total = car.pricePerDay * days;
-  const pickupDate = new Date(PICKUP_YEAR, PICKUP_MONTH, PICKUP_DAY);
-  const returnDate = new Date(PICKUP_YEAR, PICKUP_MONTH, PICKUP_DAY + days);
+  const returnDate = new Date(pickupDate);
+  returnDate.setDate(returnDate.getDate() + days);
 
   const tariff = [
     { label: "Цена за сутки", value: `${car.pricePerDay} BYN`},

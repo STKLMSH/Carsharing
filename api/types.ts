@@ -1,5 +1,7 @@
 // Контракт API
 export type CarClass = "business" | "premium" | "electric";
+export type BookingStatus = "active" | "cancelled";
+
 
 export type Car = {
     id: number;
@@ -23,6 +25,8 @@ export type Booking = {
     total: number;
     name: string;
     phone: string;
+    status: BookingStatus;
+    startsAt: string;
     createdAt: string;
 };
 
@@ -31,7 +35,14 @@ export type NewBooking = {
     days: number;
     name: string;
     phone: string;
+    startsAt: string;
 };
+
+// Число активных броней в каждом классе
+export type ClassStat = {
+    carClass: CarClass;
+    bookingsCount: number;
+}
 
 export const CAR_CLASS: Record<CarClass, string> = {
     business: "бизнес",

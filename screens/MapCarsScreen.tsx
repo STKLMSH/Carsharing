@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../types"
-import type { Car, CarClass } from "../api/types";
+import type { Car, CarClass, ClassStat } from "../api/types";
 import { CAR_CLASS } from "../api/types";
 import { BackButton } from "../components/BackButton";
 import { CarList, CAR_LIST_HEIGHT } from "../components/CarList";
@@ -43,12 +43,20 @@ export function MapCarsScreen({ navigation }: Props) {
   // Фильтрует сервер
   const query = carClass ? `?class=${carClass}` : "";
   const { data: cars, loading, error, reload } = useFetch<Car[]>(`/cars${query}`);
+  const { data: stats, reload: reloadStats } = useFetch<ClassStat[]>("/stats/classes");
 
   // Карта остаётся в стеке под бронированием. При возврате обновляем данные, т.к. машина могла стать занятой
   useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", reload);
+    const unsubscribe = navigation.addListener("focus", () => {
+      reload();
+      reloadStats();
+    });
     return unsubscribe;
   }, [navigation]);
+
+  function bookingsCount(value: CarClass | "") {
+    return stats?.find((stat) => stat.carClass === value)?.bookingsCount;
+  }
 
   function handleLogout() {
     logout();
@@ -69,7 +77,7 @@ export function MapCarsScreen({ navigation }: Props) {
   const visibleCars =
     activeTab === "all" ? allCars : allCars.filter((car) => favIds.includes(car.id));
 
-  {/* Содержимое нижней панели в зависимости от состояния загрузки */}
+  /* Содержимое нижней панели в зависимости от состояния загрузки */
   function renderList() {
     if (loading && !cars) {
       return (
@@ -146,15 +154,19 @@ export function MapCarsScreen({ navigation }: Props) {
 
         {/* Фильтр по классу */}
         <View style={styles.classes}>
-          {CLASSES.map((item) => (
-            <Pressable
-              key={item.value}
-              onPress={() => setCarClass(item.value)}
-              style={carClass === item.value ? styles.classChipActive : styles.classChip}
-            >
-              <Text style={styles.classText}>{item.label}</Text>
-            </Pressable>
-          ))}
+          {CLASSES.map((item) => {
+            const count = bookingsCount(item.value);
+            return (
+              <Pressable
+                key={item.value}
+                onPress={() => setCarClass(item.value)}
+                style={carClass === item.value ? styles.classChipActive : styles.classChip}
+              >
+                <Text style={styles.classText}>{item.label}</Text>
+                {count !== undefined ? <Text style={styles.classCount}>{count}</Text> : null}
+              </Pressable>
+            );
+          })}
         </View>
 
         {/* Маркеры */}
@@ -176,7 +188,7 @@ export function MapCarsScreen({ navigation }: Props) {
                     {({ pressed }) => (
                       <Ionicons
                         name="location-sharp"
-                        size={44}
+                        size={MARKER_SIZE}
                         color={car.busy ? colors.textSecondary : pressed ? colors.pressed : colors.default}
                       />
                     )}
@@ -269,21 +281,28 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  classes: { flexDirection: "row", flexWrap: "wrap", gap: 8, paddingHorizontal: 16, paddingTop: 12 },
+  classes: { flexDirection: "row", flexWrap: "wrap", gap: 6, paddingHorizontal: 16, paddingTop: 12 },
   classChip: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
     height: 32,
-    paddingHorizontal: 14,
+    paddingHorizontal: 10,
     borderRadius: 16,
     justifyContent: "center",
     backgroundColor: colors.background,
   },
   classChipActive: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
     height: 32,
-    paddingHorizontal: 14,
+    paddingHorizontal: 10,
     borderRadius: 16,
     justifyContent: "center",
     backgroundColor: colors.detailsSecondary,
   },
+  classCount: { fontSize: 12, fontWeight: "700", color: colors.textSecondary },
   classText: { fontSize: 13, fontWeight: "600", color: colors.textMain },
   markersLayer: { flex: 1, paddingBottom: 16 },
   markerRow: { flex: 1, justifyContent: "center" },
