@@ -4,19 +4,23 @@ GET http://localhost:3000/api/cars
 ### Фильтр по классу — 200
 GET http://localhost:3000/api/cars?class=electric
 
-### Автомобиль по id — ожидаем 200
+### Автомобиль по id — 200
 GET http://localhost:3000/api/cars/2
 
 ### Несуществующий автомобиль — 404
 GET http://localhost:3000/api/cars/99
 
-### Корректная бронь —  201
+### Статистика: брони по классам — 200
+GET http://localhost:3000/api/stats/classes
+
+### Корректная бронь — 201
+# @name created
 POST http://localhost:3000/api/bookings
 Content-Type: application/json
 
 { "carId": 2, "days": 3, "name": "Эл", "phone": "+375 29 123-45-67" }
 
-### Та же машина ещё раз — 409 
+### Та же машина ещё раз — 409
 POST http://localhost:3000/api/bookings
 Content-Type: application/json
 
@@ -38,10 +42,62 @@ Content-Type: application/json
 POST http://localhost:3000/api/bookings
 Content-Type: application/json
 
+### Начало аренды в прошлом — 400
+POST http://localhost:3000/api/bookings
+Content-Type: application/json
+
 { "carId": 3, "days": 2, "name": "Иван", "phone": "29123" }
+{ "carId": 3, "days": 2, "name": "Эл", "phone": "+375 29 123-45-67", "startsAt": "2020-01
+01T10:00:00.000Z" }
 
 ### История броней пользователя — 200
 GET http://localhost:3000/api/bookings?phone=375291234567
 
-### История без телефона — 400 
+### История без телефона — 400
 GET http://localhost:3000/api/bookings
+
+### Попытка SQL-инъекции — 200
+GET http://localhost:3000/api/cars?class=%27%20OR%20%271%27%3D%271
+
+### Отмена — 400
+PATCH http://localhost:3000/api/bookings/{{created.response.body.id}}
+Content-Type: application/json
+
+{ "status": "done", "phone": "+375 29 123-45-67" }
+
+### Отмена чужой брони — 403
+PATCH http://localhost:3000/api/bookings/{{created.response.body.id}}
+Content-Type: application/json
+
+{ "status": "cancelled", "phone": "+375 33 765-43-21" }
+
+### Отмена несуществующей брони — 404
+PATCH http://localhost:3000/api/bookings/999
+Content-Type: application/json
+
+{ "status": "cancelled", "phone": "+375 29 123-45-67" }
+
+### Отмена своей брони — 200
+PATCH http://localhost:3000/api/bookings/{{created.response.body.id}}
+Content-Type: application/json
+
+{ "status": "cancelled", "phone": "+375 29 123-45-67" }
+
+### Повторная отмена — 409
+PATCH http://localhost:3000/api/bookings/{{created.response.body.id}}
+Content-Type: application/json
+
+{ "status": "cancelled", "phone": "+375 29 123-45-67" }
+
+### Бронь, которая начнётся через минуту — 201
+# @name soon
+POST http://localhost:3000/api/bookings
+Content-Type: application/json
+
+{ "carId": 6, "days": 1, "name": "Эл", "phone": "+375 29 123-45-67", "startsAt": "{{$datetime iso8601 1 m}}" }
+
+### Аренда уже началась — 409
+PATCH http://localhost:3000/api/bookings/{{soon.response.body.id}}
+Content-Type: application/json
+
+{ "status": "cancelled", "phone": "+375 29 123-45-67" }

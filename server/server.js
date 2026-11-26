@@ -86,6 +86,17 @@ app.get("/api/cars/:id", (req, res) => {
     res.json(toCar(car));
 });
 
+//                  статистика
+app.get("/api/stats/classes", (req, res) => {
+    const stats = db.prepare(`
+        SELECT c.car_class AS carClass, COUNT(b.id) AS bookingsCount
+        FROM cars c
+        LEFT JOIN bookings b ON b.car_id = c.id AND b.status = 'active'
+        GROUP BY c.car_class
+        ORDER BY bookingsCount DESC, c.car_class
+    `).all();
+    res.json(stats);
+});
 
 //                  маршруты бронирования
 app.get("/api/bookings", (req, res) => {
@@ -125,6 +136,34 @@ app.post("/api/bookings", (req, res) => {
         }
         throw err;
     }
+});
+
+app.patch("/api/bookings/:id", (req, res) => {
+    const booking = db
+        .prepare(`
+            SELECT id, phone, status,
+                   datetime(starts_at) <= datetime('now') AS started
+            FROM bookings WHERE id = ?
+        `)
+        .get(Number(req.params.id));
+    if (!booking) {
+        return res.status(404).json({ error: "Бронь не найдена" });
+        }
+    if (req.body?.status !== "cancelled") {
+    return res.status(400).json({ error: "Бронь можно только отменить" });
+    }
+    if (onlyDigits(req.body.phone) !== booking.phone) {
+    return res.status(403).json({ error: "Это чужая бронь" });
+    }
+    if (booking.status !== "active") {
+    return res.status(409).json({ error: "Бронь уже отменена" });
+    }
+    if (booking.started) {
+    return res.status(409).json({ error: "Активную аренду нельзя отменить" });
+    }
+
+    db.prepare("UPDATE bookings SET status = 'cancelled' WHERE id = ?").run(booking.id);
+    res.json(findBooking(booking.id));
 });
 
 
