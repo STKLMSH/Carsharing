@@ -42,3 +42,5 @@ yarn-error.*
 
 #бд
 *.db
+*.db-wal
+*.db-shm

@@ -1,25 +1,22 @@
 import express from "express";
 import cors from "cors";
-import { cars } from "./data/cars.js";
+import { db } from "./db.js";
 
 const app = express();
 const PORT = 3000;
-
-const bookings = [];
-let nextBookingId = 1;
 
 const MIN_DAYS = 1;
 const MAX_DAYS = 30;
 const MIN_NAME_LENGTH = 2;
 const PHONE_LENGTH = 12;
 const PHONE_PREFIX = "375";
+const PICKUP_HOUR = 10;
 
-function isBusy(carId) {
-    return bookings.some((booking) => booking.carId === carId);
-}
-
-function withStatus(car) {
-    return { ...car, busy: isBusy(car.id) };
+function defaultStart() {
+    const date = new Date();
+    date.setDate(date.getDate() + 1);
+    date.setHours(PICKUP_HOUR, 0, 0, 0);
+    return date.toISOString();
 }
 
 function onlyDigits(value) {
@@ -43,21 +40,37 @@ app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
 });
 
+const CAR_FIELDS = `
+    c.id, c.brand, c.year, c.car_class AS carClass, c.price_per_day AS pricePerDay,
+    c.mileage, c.image, c.map_row AS row, c.map_align AS align, c.map_offSet AS offset,
+    EXISTS (
+        SELECT 1 FROM bookings b WHERE b.car_id = c.id AND b.status = 'active'
+    ) AS busy`;
+
+function toCar(row) {
+    return { ...row, busy: row.busy === 1 };
+}
 
 //                  маршруты машин
 app.get("/api/cars", (req, res) => {
     const carClass = String(req.query.class ?? "").trim();
-    const result = carClass ? cars.filter((car) => car.carClass === carClass) : cars;
-    res.json(result.map(withStatus));
+    const cars = db.prepare(`
+        SELECT ${CAR_FIELDS}
+        FROM cars c
+        WHERE ? = '' OR c.car_class = ?
+        ORDER BY c.id
+    `).all(carClass, carClass);
+    res.json(cars.map(toCar));
 });
 
 app.get("/api/cars/:id", (req, res) => {
-    const id = Number(req.params.id); 
-    const car = cars.find((item) => item.id === id);
+    const car = db
+        .prepare(`SELECT ${CAR_FIELDS} FROM cars c WHERE c.id = ?`)
+        .get(Number(req.params.id));
     if (!car) {
         return res.status(404).json({ error: "Автомобиль не найден" });
     }
-    res.json(withStatus(car));
+    res.json(toCar(car));
 });
 
 
